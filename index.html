@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#004294" />
+  <meta name="description" content="Registro de Coberturas - Equipe de Vigilância Orbenk" />
+  <title>COBERTURAS | Portal do Vigilante</title>
+
+  <link rel='preconnect' href='https://fonts.googleapis.com'>
+  <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+  <link href='https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap' rel='stylesheet'>
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'>
+
+  <style>
+    :root {
+      --primary: #0066ff;
+      --primary-glow: rgba(0, 102, 255, 0.4);
+      --secondary: #00d4ff;
+      --accent: #ff3e3e;
+      --success: #00ff88;
+      --warning: #ffaa00;
+      --bg-void: #020408;
+      --bg-surface: #0a0f1c;
+      --bg-elevated: #111827;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-active: rgba(0, 102, 255, 0.5);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --gradient-hero: linear-gradient(135deg, #0066ff 0%, #00d4ff 100%);
+      --header-height: 70px;
+      --bottom-nav-height: 70px;
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @property --gradient-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      color: var(--text-primary);
+      background: var(--bg-void);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-top: var(--header-height);
+      padding-bottom: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
+    }
+
+    /* Animated Background */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 102, 255, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0, 212, 255, 0.08), transparent),
+        radial-gradient(ellipse 50% 30% at 20% 100%, rgba(0, 102, 255, 0.05), transparent);
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+    }
+
+    /* Header */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(2, 4, 8, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+      height: var(--header-height);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(2, 4, 8, 0.98);
+      border-bottom-color: var(--border-active);
+    }
+
+    .header-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--gradient-hero);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 20px var(--primary-glow);
+      flex-shrink: 0;
+    }
+
+    .brand-icon::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      background: conic-gradient(from var(--gradient-angle), transparent, rgba(255,255,255,0.3), transparent);
+      animation: rotate 4s linear infinite;
+    }
+
+    .brand-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: relative;
+      z-index: 1;
+      border-radius: 10px;
+      padding: 2px;
+      background: var(--bg-surface);
+    }
+
+    @keyframes rotate {
+      to { --gradient-angle: 360deg; }
+    }
+
+    .brand-text h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: var(--gradient-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-text span {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      display: block;
+    }
+
+    .back-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-primary);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+
+    /* Main Content */
+    main {
+      padding: 1rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 2rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(0, 255, 136, 0.1);
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--success);
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h2 {
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.03em;
+    }
+
+    .hero h2 span {
+      background: var(--gradient-hero);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Form Container */
+    .form-container {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--gradient-hero);
+    }
+
+    .form-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .form-header i {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 102, 255, 0.1);
+      border-radius: 12px;
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+
+    .form-header h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .form-header span {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-label i {
+      color: var(--primary);
+      font-size: 0.875rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea.form-input {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Location Status */
+    .location-status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: rgba(0, 102, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+    }
+
+    .location-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 102, 255, 0.1);
+      border-radius: 10px;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+
+    .location-icon.success {
+      background: rgba(0, 255, 136, 0.1);
+      color: var(--success);
+    }
+
+    .location-icon.error {
+      background: rgba(255, 62, 62, 0.1);
+      color: var(--accent);
+    }
+
+    .location-text {
+      flex: 1;
+    }
+
+    .location-text strong {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .location-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .location-btn {
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .location-btn:hover {
+      background: var(--secondary);
+    }
+
+    .location-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 1.25rem;
+      background: var(--gradient-hero);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(0, 102, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.5s;
+    }
+
+    .submit-btn:hover::before {
+      transform: translateX(100%);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 30px rgba(0, 102, 255, 0.4);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-btn i {
+      font-size: 1.25rem;
+    }
+
+    /* Info Cards */
+    .info-cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .info-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .info-card i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .info-card span {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .info-card strong {
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      top: calc(var(--header-height) + 10px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      z-index: 9999;
+      opacity: 0;
+      transition: all 0.3s;
+      max-width: 90vw;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+    }
+
+    .toast.success { border-color: rgba(0, 255, 136, 0.3); }
+    .toast.success .toast-icon { background: rgba(0, 255, 136, 0.1); color: var(--success); }
+
+    .toast.error { border-color: rgba(255, 62, 62, 0.3); }
+    .toast.error .toast-icon { background: rgba(255, 62, 62, 0.1); color: var(--accent); }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .toast-message {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 4, 8, 0.9);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid var(--border-subtle);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 1rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 3rem;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    .footer-text {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Desktop overrides */
+    @media (min-width: 769px) {
+      body {
+        padding-bottom: 0;
+      }
+
+      main {
+        padding: 2rem;
+      }
+    }
+
+    /* Touch feedback */
+    @media (hover: none) {
+      .submit-btn:active {
+        transform: scale(0.98);
+      }
+    }
+  </style>
+<base target="_blank">
+</head>
+<body>
+  <div class="ambient-bg"></div>
+  <div class="grid-overlay"></div>
+
+  <header id="header">
+    <div class="header-content">
+      <div class="brand">
+        <div class="brand-icon">
+          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663074137771/hJbeoIhKqYfmJnTc.jpg" alt="Orbenk">
+        </div>
+        <div class="brand-text">
+          <h1>Portal do Vigilante</h1>
+          <span>Orbenk Segurança</span>
+        </div>
+      </div>
+      <a href="PORTAL NOVO.HTML" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-badge">
+        <i class="fas fa-user-clock"></i>
+        Registro de Cobertura
+      </div>
+      <h2>COBERTURA DE <span>POSTO</span></h2>
+      <p>Registre sua cobertura com localização automática</p>
+    </section>
+
+    <div class="form-container">
+      <div class="form-header">
+        <i class="fas fa-clipboard-list"></i>
+        <div>
+          <h3>Formulário de Cobertura</h3>
+          <span>Preencha todos os campos obrigatórios</span>
+        </div>
+      </div>
+
+      <form id="coberturaForm">
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-user"></i>
+            Nome Completo
+          </label>
+          <input type="text" class="form-input" id="nome" placeholder="Digite seu nome completo" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-id-card"></i>
+            Matrícula
+          </label>
+          <input type="text" class="form-input" id="matricula" placeholder="Ex: 001234" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-building"></i>
+            Nome do Posto
+          </label>
+          <input type="text" class="form-input" id="posto" placeholder="Digite o nome do posto que está cobrindo" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-comment-alt"></i>
+            Motivo da Cobertura
+          </label>
+          <textarea class="form-input" id="motivo" placeholder="Ex: Férias do vigilante titular, licença médica, falta, etc." required></textarea>
+        </div>
+
+        <div class="location-status" id="locationStatus">
+          <div class="location-icon" id="locationIcon">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div class="location-text">
+            <strong id="locationText">Aguardando localização...</strong>
+            <span id="locationSubtext">Clique para capturar sua posição atual</span>
+          </div>
+          <button type="button" class="location-btn" id="locationBtn" onclick="getLocation()">
+            <i class="fas fa-crosshairs"></i> Capturar
+          </button>
+        </div>
+
+        <input type="hidden" id="latitude" value="">
+        <input type="hidden" id="longitude" value="">
+        <input type="hidden" id="mapsLink" value="">
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <i class="fab fa-whatsapp"></i>
+          Enviar para Supervisor
+        </button>
+      </form>
+
+      <div class="info-cards">
+        <div class="info-card">
+          <i class="fas fa-map-marked-alt"></i>
+          <span>Localização</span>
+          <strong>Automática</strong>
+        </div>
+        <div class="info-card">
+          <i class="fas fa-paper-plane"></i>
+          <span>Envio</span>
+          <strong>WhatsApp</strong>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-text">
+      Supervisor: Douglas Jelinsky | Orbenk Segurança © 2026
+    </div>
+  </footer>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Enviando informações...</div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <div class="toast-content">
+      <div class="toast-title">Sucesso</div>
+      <div class="toast-message">Operação realizada</div>
+    </div>
+  </div>
+
+  <script>
+    // Header scroll effect
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Toast function
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.className = `toast ${type}`;
+      toast.querySelector('.toast-title').textContent = title;
+      toast.querySelector('.toast-message').textContent = message;
+      toast.querySelector('.toast-icon').innerHTML = type === 'success' 
+        ? '<i class="fas fa-check-circle"></i>' 
+        : '<i class="fas fa-exclamation-circle"></i>';
+
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Get Location
+    function getLocation() {
+      const locationIcon = document.getElementById('locationIcon');
+      const locationText = document.getElementById('locationText');
+      const locationSubtext = document.getElementById('locationSubtext');
+      const locationBtn = document.getElementById('locationBtn');
+      const latitudeInput = document.getElementById('latitude');
+      const longitudeInput = document.getElementById('longitude');
+      const mapsLinkInput = document.getElementById('mapsLink');
+
+      if (!navigator.geolocation) {
+        showToast('Erro', 'Geolocalização não suportada neste dispositivo', 'error');
+        return;
+      }
+
+      locationBtn.disabled = true;
+      locationText.textContent = 'Obtendo localização...';
+      locationSubtext.textContent = 'Aguarde, capturando coordenadas GPS';
+      locationIcon.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+          latitudeInput.value = lat;
+          longitudeInput.value = lng;
+          mapsLinkInput.value = mapsLink;
+
+          locationIcon.className = 'location-icon success';
+          locationIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+          locationText.textContent = 'Localização capturada!';
+          locationSubtext.textContent = `Lat: ${lat.toFixed(6)} | Lng: ${lng.toFixed(6)}`;
+          locationBtn.innerHTML = '<i class="fas fa-redo"></i> Atualizar';
+          locationBtn.disabled = false;
+
+          showToast('Sucesso', 'Localização capturada com sucesso!');
+        },
+        (error) => {
+          let errorMsg = 'Não foi possível obter a localização';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMsg = 'Permissão de localização negada';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMsg = 'Informação de localização indisponível';
+              break;
+            case error.TIMEOUT:
+              errorMsg = 'Tempo esgotado ao obter localização';
+              break;
+          }
+
+          locationIcon.className = 'location-icon error';
+          locationIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+          locationText.textContent = 'Erro na localização';
+          locationSubtext.textContent = errorMsg;
+          locationBtn.disabled = false;
+
+          showToast('Erro', errorMsg, 'error');
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0
+        }
+      );
+    }
+
+    // Form Submit
+    document.getElementById('coberturaForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value.trim();
+      const matricula = document.getElementById('matricula').value.trim();
+      const posto = document.getElementById('posto').value.trim();
+      const motivo = document.getElementById('motivo').value.trim();
+      const latitude = document.getElementById('latitude').value;
+      const longitude = document.getElementById('longitude').value;
+      const mapsLink = document.getElementById('mapsLink').value;
+
+      if (!latitude || !longitude) {
+        showToast('Atenção', 'Capture sua localização antes de enviar', 'error');
+        document.getElementById('locationStatus').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      // Show loading
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      loadingOverlay.classList.add('show');
+
+      // Format date and time
+      const now = new Date();
+      const data = now.toLocaleDateString('pt-BR');
+      const hora = now.toLocaleTimeString('pt-BR');
+
+      // Build message
+      const mensagem = `*REGISTRO DE COBERTURA - ORBENK*%0A%0A` +
+        `*Vigilante:* ${nome}%0A` +
+        `*Matrícula:* ${matricula}%0A` +
+        `*Posto:* ${posto}%0A` +
+        `*Motivo:* ${motivo}%0A%0A` +
+        `*Data:* ${data}%0A` +
+        `*Hora:* ${hora}%0A%0A` +
+        `*Localização:*%0A` +
+        `${mapsLink}%0A%0A` +
+        `_Enviado via Portal do Vigilante_`;
+
+      // WhatsApp number
+      const telefone = '5547989259134';
+
+      // Create WhatsApp link
+      const whatsappUrl = `https://wa.me/${telefone}?text=${mensagem}`;
+
+      // Simulate processing delay
+      setTimeout(() => {
+        loadingOverlay.classList.remove('show');
+
+        // Open WhatsApp
+        window.open(whatsappUrl, '_blank');
+
+        showToast('Sucesso', 'Redirecionando para WhatsApp...');
+
+        // Reset form after 2 seconds
+        setTimeout(() => {
+          document.getElementById('coberturaForm').reset();
+          document.getElementById('locationIcon').className = 'location-icon';
+          document.getElementById('locationIcon').innerHTML = '<i class="fas fa-map-marker-alt"></i>';
+          document.getElementById('locationText').textContent = 'Aguardando localização...';
+          document.getElementById('locationSubtext').textContent = 'Clique para capturar sua posição atual';
+          document.getElementById('locationBtn').innerHTML = '<i class="fas fa-crosshairs"></i> Capturar';
+          document.getElementById('latitude').value = '';
+          document.getElementById('longitude').value = '';
+          document.getElementById('mapsLink').value = '';
+        }, 2000);
+      }, 1500);
+    });
+
+    // Auto-request location on page load
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        if (confirm('Deseja capturar sua localização automaticamente?')) {
+          getLocation();
+        }
+      }, 1000);
+    });
+
+    // Welcome toast
+    setTimeout(() => {
+      showToast('Bem-vindo', 'Preencha o formulário de cobertura');
+    }, 500);
+  </script>
+</body>
+</html>
